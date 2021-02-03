@@ -1,6 +1,6 @@
 name: Build-with-release
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       name:
@@ -28,12 +28,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: (Hacky) method of compiling Geyser first #Thanks Jackson_57#4340 or https://github.com/jackson-57
-      run: |
-        git clone https://github.com/GeyserMC/Geyser.git GeyserMC
-        cd GeyserMC
-        mvn -B -U package -T 2C
-        cd ..
     - name: Build with Maven
       run: mvn -B -U package -T 2C
     - name: Archive artifacts (Geyser Standalone)
@@ -61,6 +55,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: spigot/target/
+        asset_path: spigot/target/GeyserSkinManager-Spigot.jar
         asset_name: GeyserSkinManager-Spigot.jar
         asset_content_type: application/zip
