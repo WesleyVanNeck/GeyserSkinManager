@@ -44,7 +44,7 @@ jobs:
       if: success()
       with:
           name: GeyserSkinManager (Bungeecord)
-          path: bungeecord/target/
+          path: bungeecord/target/GeyserSkinManager-BungeeCord.jar
 
     - name: Create Release
       id: create_release
@@ -75,6 +75,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: bungeecord/target/GeyserSkinManager-Bungeecord.jar
-        asset_name: GeyserSkinManager-Bungeecord.jar
+        asset_path: bungeecord/target/GeyserSkinManager-BungeeCord.jar
+        asset_name: GeyserSkinManager-BungeeCord.jar
         asset_content_type: application/zip
