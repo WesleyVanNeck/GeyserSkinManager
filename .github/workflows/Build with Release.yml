@@ -44,7 +44,7 @@ jobs:
       if: success()
       with:
           name: GeyserSkinManager (Bungeecord)
-          path: bungeecord/target/GeyserSkinManager-Bungeecord.jar
+          path: bungeecord/target/
 
     - name: Create Release
       id: create_release
