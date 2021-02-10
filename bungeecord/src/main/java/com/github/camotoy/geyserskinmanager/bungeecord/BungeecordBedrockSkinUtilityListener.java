@@ -1,20 +1,18 @@
 package com.github.camotoy.geyserskinmanager.bungeecord;
 
-import com.github.camotoy.geyserskinmanager.common.platform.BedrockSkinUtilityListener;
 import com.github.camotoy.geyserskinmanager.common.Constants;
 import com.github.camotoy.geyserskinmanager.common.SkinDatabase;
+import com.github.camotoy.geyserskinmanager.common.platform.BedrockSkinUtilityListener;
 import com.github.camotoy.geyserskinmanager.common.skinretriever.BedrockSkinRetriever;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,30 +23,26 @@ public class BungeecordBedrockSkinUtilityListener extends BedrockSkinUtilityList
     }
 
     @EventHandler
-    public void onPlayerJoin(PostLoginEvent event) {
-        event.getPlayer().sendData(Constants.INIT_PLUGIN_MESSAGE_NAME, new byte[0]);
+    public void onServerSwitch(ServerSwitchEvent event) {
+        if (this.moddedPlayers.containsKey(event.getPlayer().getUniqueId())) {
+            sendAllCapes(event.getPlayer());
+        }
+
+        byte[] capeData = this.database.getCape(event.getPlayer().getUniqueId());
+        if (capeData != null) {
+            onBedrockServerJoinOrSwitch(event.getPlayer().getServer().getInfo(), capeData);
+        }
     }
 
     @EventHandler
     public void onPluginMessageReceived(PluginMessageEvent event) {
-        if (event.getTag().equals(Constants.BEDROCK_SKIN_UTILITY_INIT_NAME)) {
-            try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()))) {
-                int version = in.readInt();
-                if (version != Constants.BEDROCK_SKIN_UTILITY_INIT_VERSION) {
-                    // Ignore I guess; we wouldn't want to spam the server
-                    return;
+        if ((event.getTag().equals("minecraft:register") || event.getTag().equals("REGISTER")) && event.getSender() instanceof ProxiedPlayer) {
+            String[] registeredChannels = new String(event.getData(), StandardCharsets.UTF_8).split("\0");
+            for (String channel : registeredChannels) {
+                if (channel.equals(Constants.MOD_PLUGIN_MESSAGE_NAME)) {
+                    onModdedPlayerConfirm(((ProxiedPlayer) event.getSender()));
+                    break;
                 }
-
-                ProxiedPlayer player = ProxyServer.getInstance().getPlayer(new UUID(in.readLong(), in.readLong()));
-                if (player == null) {
-                    return;
-                }
-                if (!moddedPlayers.containsKey(player.getUniqueId())) {
-                    moddedPlayers.put(player.getUniqueId(), player);
-                    sendAllCapes(player);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -56,10 +50,14 @@ public class BungeecordBedrockSkinUtilityListener extends BedrockSkinUtilityList
     public void onBedrockPlayerJoin(ProxiedPlayer player, ServerInfo serverInfo) {
         byte[] payload = getCape(getUUID(player));
         if (payload != null) {
-            for (ProxiedPlayer moddedPlayer : moddedPlayers.values()) {
-                if (moddedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
-                    sendCape(payload, moddedPlayer);
-                }
+            onBedrockServerJoinOrSwitch(serverInfo, payload);
+        }
+    }
+
+    public void onBedrockServerJoinOrSwitch(ServerInfo serverInfo, byte[] payload) {
+        for (ProxiedPlayer moddedPlayer : moddedPlayers.values()) {
+            if (moddedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
+                sendCape(payload, moddedPlayer);
             }
         }
     }
@@ -75,7 +73,7 @@ public class BungeecordBedrockSkinUtilityListener extends BedrockSkinUtilityList
 
     @Override
     public void sendCape(byte[] payload, ProxiedPlayer player) {
-        player.sendData(Constants.CAPE_PLUGIN_MESSAGE_NAME, payload);
+        player.sendData(Constants.MOD_PLUGIN_MESSAGE_NAME, payload);
     }
 
     @Override
