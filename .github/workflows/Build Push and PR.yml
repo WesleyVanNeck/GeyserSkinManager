@@ -32,11 +32,11 @@ jobs:
       uses: actions/upload-artifact@v2
       if: success()
       with:
-          name: GeyserSkinManager (Spigot)
-          path: spigot/target/GeyserSkinManager-Spigot.jar
+          name: GeyserSkinManager (volocity)
+          path: velocity/target/GeyserSkinManager-Velocity.jar
     - name: Archive artifacts (GeyserSM Bungee)
       uses: actions/upload-artifact@v2
       if: success()
       with:
-          name: GeyserSkinManager (Bungeecord)
-          path: bungeecord/target/GeyserSkinManager-Bungeecord.jar
+          name: GeyserSkinManager (spigot)
+          path: spigot/target/GeyserSkinManager-Spigot.jar
