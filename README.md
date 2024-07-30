@@ -1,6 +1,6 @@
 # GeyserSkinManager
 
-### Primarily the server-side companion for the [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) Fabric mod.
+### Primarily the server-side companion for the [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) Fabric mod. 
 
 #### Skin visibility for non-modded players can be viewed without Floodgate installed, Or by changing the config option "force-show-skins:" from false to true.
 
