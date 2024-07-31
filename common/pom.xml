@@ -13,18 +13,16 @@
         <jackson.version>2.15.2</jackson.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>opencollab-repository-maven-snapshots</id>
-            <url>https://repo.opencollab.dev/maven-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+<repositories>
+    <repository>
+        <id>opencollab-releases</id>
+        <url>https://repo.opencollab.dev/maven-releases/</url>
+    </repository>
+    <repository>
+        <id>opencollab-snapshots</id>
+        <url>https://repo.opencollab.dev/maven-snapshots/</url>
+    </repository>
+</repositories>
 
     <dependencies>
         <dependency>
